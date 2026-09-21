@@ -25,8 +25,21 @@ public class Dealer {
     // ~ Constructors ..........................................................
     public Dealer() {
         // initialize an array of 52 standards playing cards
+        deck = new Card[52];
         playerHand = new Card[maxHandSize];
         dealerHand = new Card[maxHandSize];
+        for(int value = 2; value < 11; value++) {
+            for(int i = 0; i < 4; i++) {
+                deck[i+((value-2)*4)] = new Card(value, false);
+            }
+        }
+        for(int i = 0; i < 12; i++) {
+            deck[36+i] = new Card(10, false);
+        }
+        for(int i = 0; i < 4; i++) {
+            deck[48+i] = new Card(11, true);
+        }
+        shuffleDeck();
     }
 
 
@@ -37,10 +50,10 @@ public class Dealer {
      * and determines which one it is. If it is invalid, it will prompt the
      * player again.
      * 
-     * @function PlayerTurn
+     * @function playerTurn
      * @return boolean Whether or not the player hit (true) or stayed (false)
      */
-    public boolean PlayerTurn() {
+    public boolean playerTurn() {
         String[] validHit = { "Hit", "Yes", "Affirmative" };
 
         String[] validStay = { "Stay", "No", "Negative" };
@@ -56,13 +69,13 @@ public class Dealer {
             String input = playerInput.nextLine();
             for (int i = 0; i < validHit.length; i++) {
                 if (input.equals(validHit[i])) {
-                    invalidInput = false; 
+                    invalidInput = false;
                 }
             }
 
             for (int i = 0; i < validStay.length; i++) {
                 if (input.equals(validStay[i])) {
-                    invalidInput = false; 
+                    invalidInput = false;
                     hit = false;
                 }
             }
@@ -73,7 +86,7 @@ public class Dealer {
         }
         if (hit) {
             Deal(playerHand);
-            if(CalculateHandValue(playerHand) > 21) {
+            if (CalculateHandValue(playerHand) > 21) {
                 System.out.println("Player busts! Dealer wins.");
             }
             System.out.println("Your card is: " + "PLACEHOLDER CARD");
@@ -87,10 +100,10 @@ public class Dealer {
 
 
     /**
-     * @function DealerTurn() decides what the dealer does on their turn
+     * @function dealerTurn() decides what the dealer does on their turn
      * @return boolean Whether or not the player hit (true) or stayed (false)
      */
-    public boolean DealerTurn() {
+    public boolean dealerTurn() {
         boolean hit = true;
         int handValue = 15; // CalculateHandValue(dealerHand);
         if (handValue < 17) {
@@ -111,11 +124,12 @@ public class Dealer {
 
 
     /**
-     * @function CalculateHandValue returns the value of the given hand
-     * @param hand The hand to evaluate
+     * @function calculateHandValue returns the value of the given hand
+     * @param hand
+     *            The hand to evaluate
      * @return The value of the hand
      */
-    public int CalculateHandValue(Card[] hand) {
+    public int calculateHandValue(Card[] hand) {
         int sum = 0;
         int aceCount = 0;
         for (int i = 0; i < hand.length; i++) {
@@ -138,7 +152,7 @@ public class Dealer {
 
     // ----------------------------------------------------------
     /**
-     * ShuffleDeck will randomize the order of cards in the dealer's deck
+     * shuffleDeck will randomize the order of cards in the dealer's deck
      * 
      * It creates a new, empty deck, the same length as the original deck
      * Then it randomly selects a card from the deck and adds it to the
@@ -148,7 +162,7 @@ public class Dealer {
      * Then it selects a new card from every card but the last one, etc. etc.
      * Should take O(5n+4) time
      */
-    public void ShuffleDeck() {
+    public void shuffleDeck() {
         Card[] tempDeck = new Card[deck.length];
         Card tempHold;
         int randomIndex = 0;
@@ -162,6 +176,7 @@ public class Dealer {
         }
         deck = tempDeck;
         topCard = deck.length - 1;
+        //System.out.println("Deck shuffled");
     }
 
 
@@ -172,18 +187,18 @@ public class Dealer {
      * @param importedDeck
      *            The deck the player defined themself
      */
-    public void SetDeck(Card[] importedDeck) {
+    public void setDeck(Card[] importedDeck) {
 
         deck = importedDeck;
         topCard = deck.length - 1;
     }
 
-    
-    public int Deal(Card[] hand) {
+
+    public int deal(Card[] hand) {
         int value = deck[topCard].getValue();
         hand.push(deck[topCard]);
         topCard--;
-        
+
         return value;
     }
 }
