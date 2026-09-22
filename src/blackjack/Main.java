@@ -247,7 +247,8 @@ public class Main
     {
         System.out.println();
         System.out.println("The game is starting!");
-
+        
+        dealer.initialDeal();
         boolean playerHit = true;
 
         while (playerHit)

@@ -10,12 +10,14 @@ import java.util.Scanner;
  */
 public class Dealer {
     // ~ Fields ................................................................
-    private Card[] deck;
+    public Card[] deck;
     private Card[] playerHand;
+    private int playerHandSize;
     private Card[] dealerHand;
+    public int dealerHandSize;
 
     private int maxHandSize = 21;
-    private int topCard = deck.length - 1;
+    private int topCard;
 
     // ----------------------------------------------------------
     /**
@@ -27,17 +29,19 @@ public class Dealer {
         // initialize an array of 52 standards playing cards
         deck = new Card[52];
         playerHand = new Card[maxHandSize];
+        playerHandSize = 0;
         dealerHand = new Card[maxHandSize];
-        for(int value = 2; value < 11; value++) {
-            for(int i = 0; i < 4; i++) {
-                deck[i+((value-2)*4)] = new Card(value, false);
+        dealerHandSize = 0;
+        for (int value = 2; value < 11; value++) {
+            for (int i = 0; i < 4; i++) {
+                deck[i + ((value - 2) * 4)] = new Card(value, false);
             }
         }
-        for(int i = 0; i < 12; i++) {
-            deck[36+i] = new Card(10, false);
+        for (int i = 0; i < 12; i++) {
+            deck[36 + i] = new Card(10, false);
         }
-        for(int i = 0; i < 4; i++) {
-            deck[48+i] = new Card(11, true);
+        for (int i = 0; i < 4; i++) {
+            deck[48 + i] = new Card(11, true);
         }
         shuffleDeck();
     }
@@ -62,8 +66,15 @@ public class Dealer {
 
         while (invalidInput) {
             Scanner playerInput = new Scanner(System.in);
-            System.out.println("The dealer's revealed card is: ");
+            System.out.println("The dealer's revealed card is: " + dealerHand[1]
+                .getValue());
             System.out.println("Your cards are: ");
+            for(int i = 0; i < playerHandSize; i++) {
+                System.out.print(playerHand[i].getValue());
+                if(i < playerHandSize-1) {
+                    System.out.print(", ");
+                }
+            }
             System.out.println("Would you like to Hit or Stay?");
 
             String input = playerInput.nextLine();
@@ -85,11 +96,17 @@ public class Dealer {
                     + "\"Stay\"!");
         }
         if (hit) {
-            deal(playerHand);
+            System.out.println("Your card is: " + dealPlayer());
             if (calculateHandValue(playerHand) > 21) {
                 System.out.println("Player busts! Dealer wins.");
             }
-            System.out.println("Your card is: " + "PLACEHOLDER CARD");
+            System.out.println("Your cards are: ");
+            for(int i = 0; i < playerHandSize; i++) {
+                System.out.print(playerHand[i].getValue());
+                if(i < playerHandSize-1) {
+                    System.out.print(", ");
+                }
+            }
         }
         else {
             System.out.println("You chose to stay. Your hand's value is: "
@@ -107,7 +124,7 @@ public class Dealer {
         boolean hit = true;
         int handValue = 15; // CalculateHandValue(dealerHand);
         if (handValue < 17) {
-            deal(dealerHand);
+            dealDealer();
             System.out.println("The dealer has chosen to hit!");
             calculateHandValue(dealerHand);
             if (handValue > 21) {
@@ -132,8 +149,16 @@ public class Dealer {
     public int calculateHandValue(Card[] hand) {
         int sum = 0;
         int aceCount = 0;
-        for (int i = 0; i < hand.length; i++) {
-            sum += hand[i];
+        int handSize;
+        if (hand.equals(dealerHand)) {
+            handSize = dealerHandSize;
+        }
+        else {
+            handSize = playerHandSize;
+        }
+
+        for (int i = 0; i < handSize; i++) {
+            sum += hand[i].getValue();
             /*
              * if(hand[i].isAce()) {
              * aceCount++;
@@ -166,9 +191,12 @@ public class Dealer {
         Card[] tempDeck = new Card[deck.length];
         Card tempHold;
         int randomIndex = 0;
+        int lastCardIndex = 0;
+
         for (int i = deck.length; i > 0; i--) {
             randomIndex = (int)(Math.random() * i);
-            tempDeck.push(deck[randomIndex]);
+            tempDeck[lastCardIndex] = deck[randomIndex];
+            lastCardIndex++;
 
             tempHold = deck[randomIndex];
             deck[randomIndex] = deck[i - 1];
@@ -176,7 +204,7 @@ public class Dealer {
         }
         deck = tempDeck;
         topCard = deck.length - 1;
-        //System.out.println("Deck shuffled");
+        System.out.println("Deck shuffled");
     }
 
 
@@ -194,11 +222,47 @@ public class Dealer {
     }
 
 
-    public int deal(Card[] hand) {
+    // ----------------------------------------------------------
+    /**
+     * Deals a card to the player
+     * 
+     * @return value The numerical value of the card
+     */
+    public int dealPlayer() {
         int value = deck[topCard].getValue();
-        hand.push(deck[topCard]);
+        
+        playerHand[playerHandSize] = deck[topCard];
+        playerHandSize++;
         topCard--;
 
         return value;
+    }
+    
+    // ----------------------------------------------------------
+    /**
+     * Deals a card to the dealer
+     * 
+     * @return value The numerical value of the card
+     */
+    public int dealDealer() {
+        int value = deck[topCard].getValue();
+        
+        dealerHand[dealerHandSize] = deck[topCard];
+        dealerHandSize++;
+        topCard--;
+
+        return value;
+        
+    }
+    
+    // ----------------------------------------------------------
+    /**
+     * Deals the starting hand to player and dealer
+     */
+    public void initialDeal() {
+        dealPlayer();
+        dealDealer();
+        dealPlayer();
+        dealDealer();
     }
 }
