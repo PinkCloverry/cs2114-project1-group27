@@ -58,9 +58,9 @@ public class Dealer {
      * @return boolean Whether or not the player hit (true) or stayed (false)
      */
     public boolean playerTurn() {
-        String[] validHit = { "Hit", "Yes", "Affirmative" };
+        String[] validHit = { "Hit", "Yes", "Affirmative", "hit" };
 
-        String[] validStay = { "Stay", "No", "Negative" };
+        String[] validStay = { "Stay", "No", "Negative", "stay" };
         boolean invalidInput = true;
         boolean hit = true;
 
@@ -68,11 +68,14 @@ public class Dealer {
             Scanner playerInput = new Scanner(System.in);
             System.out.println("The dealer's revealed card is: " + dealerHand[1]
                 .getValue());
-            System.out.println("Your cards are: ");
-            for(int i = 0; i < playerHandSize; i++) {
+            System.out.print("Your cards are: ");
+            for (int i = 0; i < playerHandSize; i++) {
                 System.out.print(playerHand[i].getValue());
-                if(i < playerHandSize-1) {
+                if (i < playerHandSize - 1) {
                     System.out.print(", ");
+                }
+                else {
+                    System.out.println("");
                 }
             }
             System.out.println("Would you like to Hit or Stay?");
@@ -91,26 +94,34 @@ public class Dealer {
                 }
             }
 
-            System.out.println(
-                "Invalid response! To Hit, type \"Hit\", and to Stay, type "
-                    + "\"Stay\"!");
+            if (invalidInput) {
+                System.out.println(
+                    "Invalid response! To Hit, type \"Hit\", and to Stay, type "
+                        + "\"Stay\"!");
+            }
         }
+
         if (hit) {
             System.out.println("Your card is: " + dealPlayer());
             if (calculateHandValue(playerHand) > 21) {
-                System.out.println("Player busts! Dealer wins.");
+                System.out.println("Player busts with a value of "
+                    + calculateHandValue(playerHand) + "!");
+                return false;
             }
-            System.out.println("Your cards are: ");
-            for(int i = 0; i < playerHandSize; i++) {
+            System.out.print("Your cards are: ");
+            for (int i = 0; i < playerHandSize; i++) {
                 System.out.print(playerHand[i].getValue());
-                if(i < playerHandSize-1) {
+                if (i < playerHandSize - 1) {
                     System.out.print(", ");
+                }
+                else {
+                    System.out.println("");
                 }
             }
         }
         else {
             System.out.println("You chose to stay. Your hand's value is: "
-                + "PLACEHOLDER VALUE");
+                + calculateHandValue(playerHand));
         }
         return hit;
     }
@@ -122,13 +133,28 @@ public class Dealer {
      */
     public boolean dealerTurn() {
         boolean hit = true;
-        int handValue = 15; // CalculateHandValue(dealerHand);
+        if (calculateHandValue(playerHand) > 22) {
+            return false;
+        }
+
+        System.out.print("The dealer's cards are ");
+        for(int i = 0; i < dealerHandSize; i++) {
+            System.out.print(dealerHand[i].getValue());
+            if(i < dealerHandSize-1) {
+                System.out.print(", ");
+            }
+            else {
+                System.out.println(". For a value of: " + calculateHandValue(dealerHand));
+            }
+        }
+        
+        int handValue = calculateHandValue(dealerHand);
         if (handValue < 17) {
-            dealDealer();
-            System.out.println("The dealer has chosen to hit!");
-            calculateHandValue(dealerHand);
+            System.out.println("The dealer has chosen to hit and draws a " + dealDealer() + "!");
+            handValue = calculateHandValue(dealerHand);
             if (handValue > 21) {
-                System.out.println("The dealer busts! Player wins!");
+                System.out.println("The dealer busts with a value of " + handValue + "!");
+                return false;
             }
         }
         else {
@@ -159,11 +185,10 @@ public class Dealer {
 
         for (int i = 0; i < handSize; i++) {
             sum += hand[i].getValue();
-            /*
-             * if(hand[i].isAce()) {
-             * aceCount++;
-             * }
-             */
+            if (hand[i].isAce()) {
+                aceCount++;
+            }
+
         }
 
         while (aceCount > 0 && sum > 21) {
@@ -230,14 +255,15 @@ public class Dealer {
      */
     public int dealPlayer() {
         int value = deck[topCard].getValue();
-        
+
         playerHand[playerHandSize] = deck[topCard];
         playerHandSize++;
         topCard--;
 
         return value;
     }
-    
+
+
     // ----------------------------------------------------------
     /**
      * Deals a card to the dealer
@@ -246,15 +272,16 @@ public class Dealer {
      */
     public int dealDealer() {
         int value = deck[topCard].getValue();
-        
+
         dealerHand[dealerHandSize] = deck[topCard];
         dealerHandSize++;
         topCard--;
 
         return value;
-        
+
     }
-    
+
+
     // ----------------------------------------------------------
     /**
      * Deals the starting hand to player and dealer
@@ -264,5 +291,18 @@ public class Dealer {
         dealDealer();
         dealPlayer();
         dealDealer();
+    }
+
+
+    public boolean determineWinner() {
+        int playerValue = calculateHandValue(playerHand);
+        int dealerValue = calculateHandValue(dealerHand);
+        if (playerValue > 21) {
+            return false;
+        }
+        if (dealerValue > 21) {
+            return true;
+        }
+        return playerValue >= dealerValue;
     }
 }

@@ -262,7 +262,16 @@ public class Main
         {
             dealerHit = dealer.dealerTurn();
         }
-
-        System.out.println("The round is over!");
+        boolean playerWin = dealer.determineWinner();
+        String endMessage;
+        
+        System.out.print("The round is over! ");
+        if(playerWin) {
+            endMessage = "Player wins!";
+        }
+        else {
+            endMessage = "Dealer wins!";
+        }
+        System.out.println(endMessage);
     }
 }
