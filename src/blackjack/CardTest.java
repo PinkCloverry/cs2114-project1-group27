@@ -1,36 +1,40 @@
 package blackjack;
 
-public class CardTest {
+import student.TestCase;
 
-    public static void main(String[] args) {
+public class CardTest extends TestCase {
 
-        // Test getValue() with a normal card
-        Card ten = new Card(10, false);
+    private Card ten;
+    private Card ace;
+    private Card seven;
 
-        if (ten.getValue() == 10) {
-            System.out.println("PASS: getValue()");
-        } else {
-            System.out.println("FAIL: getValue()");
-        }
+    public void setUp() {
+        ten = new Card(10, false);
+        ace = new Card(11, true);
+        seven = new Card(7, false);
+    }
 
-        // Test isAce() with an ace
-        Card ace = new Card(11, true);
+    /**
+     * Tests getValue().
+     */
+    public void testGetValue() {
+        assertEquals(10, ten.getValue());
+        assertEquals(11, ace.getValue());
+        assertEquals(7, seven.getValue());
+    }
 
-        if (ace.isAce()) {
-            System.out.println("PASS: isAce() true");
-        } else {
-            System.out.println("FAIL: isAce() true");
-        }
+    /**
+     * Tests isAce() when the card is an ace.
+     */
+    public void testIsAceTrue() {
+        assertTrue(ace.isAce());
+    }
 
-        // Test isAce() with a non-ace
-        Card seven = new Card(7, false);
-
-        if (!seven.isAce()) {
-            System.out.println("PASS: isAce() false");
-        } else {
-            System.out.println("FAIL: isAce() false");
-        }
-
-        System.out.println("Testing complete.");
+    /**
+     * Tests isAce() when the card is not an ace.
+     */
+    public void testIsAceFalse() {
+        assertFalse(ten.isAce());
+        assertFalse(seven.isAce());
     }
 }
