@@ -133,7 +133,7 @@ public class Dealer {
      */
     public boolean dealerTurn() {
         boolean hit = true;
-        if (calculateHandValue(playerHand) > 22) {
+        if (calculateHandValue(playerHand) > 21) {
             return false;
         }
 
