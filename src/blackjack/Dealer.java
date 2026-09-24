@@ -3,7 +3,7 @@ package blackjack;
 import java.util.Scanner;
 
 /**
- * Dealer class responsible for handling cards
+ * Dealer class responsible for handling cards and player/dealer hands.
  * 
  * @author Rin Hall
  * @version Sep 16, 2026
@@ -293,7 +293,11 @@ public class Dealer {
         dealDealer();
     }
 
-
+    /**
+     * Calculates who wins the game. If the player busts, the player immediately loses
+     * 
+     * @return boolean true if the player wins, false if the dealer wins
+     */
     public boolean determineWinner() {
         int playerValue = calculateHandValue(playerHand);
         int dealerValue = calculateHandValue(dealerHand);
